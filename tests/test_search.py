@@ -1,4 +1,6 @@
-from pages.search import YaSearchPage
+from selenium.webdriver.common.by import By
+
+from pages.search import YaSearchPage, YaImageSearch
 from pages.result import YaResultPage
 
 def test_basic_ya_search(browser):
@@ -25,4 +27,24 @@ def test_complicated_ya_search(browser):
     for res_text in result_page.phrase_results_texts():
         count_query += int(QUERY in res_text.lower())
     assert count_query > 0
+
+def test_image_search(browser):
+    QUERY = 'лошадь'
+
+    # Search for query in the engine
+    search_page = YaSearchPage(browser)
+    search_page.load()
+    search_page.search(QUERY)
+
+    # Load query images
+    image_search = YaImageSearch(browser)
+    image_search.load_images()
+    # Open the first image
+    image_search.load_image()
+    # Search in the engine by this image
+    image_search.search_by_image()
+    # Check that result contains query in the title
+    assert QUERY in image_search.card_title().lower()
+
+
 
